@@ -1,0 +1,62 @@
+// src/services/api.js
+
+const API_KEY = '8c999b93995dfb7803123d74db16469d';
+const BASE_URL = 'http://api.aviationstack.com/v1/flights';
+
+/**
+ * Fetches flight details from AviationStack API.
+ * @param {string} flightNumber - The flight number to search for (e.g., 'AA100').
+ * @returns {Promise<Object>} - A promise that resolves with flight details or rejects with an error.
+ */
+export const fetchFlightDetails = async (flightNumber) => {
+    try {
+        const response = await fetch(`${BASE_URL}?access_key=${API_KEY}&flight_iata=${flightNumber}`);
+
+        if (!response.ok) {
+            throw new Error('Erro na comunicação com o servidor.');
+        }
+
+        const json = await response.json();
+
+        if (json.error) {
+            throw new Error(json.error.message || 'Erro na API de voos.');
+        }
+
+        if (!json.data || json.data.length === 0) {
+            throw new Error('Voo não encontrado. Verifique o número e tente novamente.');
+        }
+
+        // AviationStack can return multiple entries for the same flight number (different dates).
+        // We'll take the most recent/relevant one, usually the first one or filter by date if needed.
+        // For now, taking the first active or scheduled one is a reasonable approach, 
+        // or just the first one returned as they are usually sorted.
+        const flightData = json.data[0];
+
+        return {
+            flightNumber: flightData.flight.iata,
+            origin: `${flightData.departure.airport} (${flightData.departure.iata})`,
+            destination: `${flightData.arrival.airport} (${flightData.arrival.iata})`,
+            departureTime: flightData.departure.scheduled,
+            arrivalTime: flightData.arrival.scheduled,
+            status: translateStatus(flightData.flight_status),
+            gate: flightData.departure.gate || '-',
+            terminal: flightData.departure.terminal || '-'
+        };
+
+    } catch (error) {
+        console.error("API Error:", error);
+        throw error;
+    }
+};
+
+const translateStatus = (status) => {
+    const statusMap = {
+        'scheduled': 'Agendado',
+        'active': 'Em voo',
+        'landed': 'Aterrissou',
+        'cancelled': 'Cancelado',
+        'incident': 'Incidente',
+        'diverted': 'Desviado'
+    };
+    return statusMap[status] || status;
+};
