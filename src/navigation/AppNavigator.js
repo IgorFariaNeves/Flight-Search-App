@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -9,9 +10,11 @@ import HistoryScreen from '../screens/HistoryScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import FlightDetailsScreen from '../screens/FlightDetailsScreen';
+import MapScreen from '../screens/MapScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
 function TabNavigator() {
     return (
@@ -34,6 +37,7 @@ function TabNavigator() {
                 },
                 tabBarActiveTintColor: '#007AFF',
                 tabBarInactiveTintColor: 'gray',
+                headerShown: false, // O Drawer ou Stack cuidará do Header
             })}
         >
             <Tab.Screen name="Buscar" component={SearchScreen} />
@@ -44,13 +48,36 @@ function TabNavigator() {
     );
 }
 
+function DrawerNavigator() {
+    return (
+        <Drawer.Navigator initialRouteName="HomeTabs">
+            <Drawer.Screen
+                name="HomeTabs"
+                component={TabNavigator}
+                options={{
+                    title: 'Início',
+                    drawerIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />
+                }}
+            />
+            <Drawer.Screen
+                name="Map"
+                component={MapScreen}
+                options={{
+                    title: 'Mapa de Aeroportos',
+                    drawerIcon: ({ color, size }) => <Ionicons name="map-outline" size={size} color={color} />
+                }}
+            />
+        </Drawer.Navigator>
+    );
+}
+
 export default function AppNavigator() {
     return (
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen
                     name="Main"
-                    component={TabNavigator}
+                    component={DrawerNavigator}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
