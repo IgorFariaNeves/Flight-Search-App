@@ -6,7 +6,7 @@ const FAVORITES_KEY = '@flight_search_favorites';
 export const saveHistory = async (flight) => {
     try {
         const history = await getHistory();
-        // Avoid duplicates
+
         const newHistory = [flight, ...history.filter(f => f.flightNumber !== flight.flightNumber)].slice(0, 10); // Keep last 10
         await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
     } catch (e) {

@@ -17,7 +17,7 @@ export default function MapScreen() {
             if (data && data.data) {
                 setAirports(data.data);
             } else {
-                // Fallback mock data se a API falhar (comum com chaves de teste/inválidas)
+
                 console.log("Usando dados de fallback para demonstração.");
                 setAirports([
                     { airport_name: "Guarulhos", latitude: -23.4356, longitude: -46.4731, id: 1 },
