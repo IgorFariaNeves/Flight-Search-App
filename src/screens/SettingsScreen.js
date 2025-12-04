@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import { clearHistory, clearFavorites } from '../services/storage';
+import { signOut } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
 export default function SettingsScreen() {
     const handleClearData = async () => {
@@ -23,8 +25,38 @@ export default function SettingsScreen() {
         );
     };
 
+    const handleLogout = async () => {
+        Alert.alert(
+            'Sair',
+            'Tem certeza que deseja sair da sua conta?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Sair',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await signOut(auth);
+                        } catch (error) {
+                            Alert.alert('Erro', 'Não foi possível sair. Tente novamente.');
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
     return (
         <View style={styles.container}>
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Conta</Text>
+                <CustomButton
+                    title="Sair"
+                    onPress={handleLogout}
+                    style={styles.logoutButton}
+                />
+            </View>
+
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Dados</Text>
                 <CustomButton
@@ -73,5 +105,8 @@ const styles = StyleSheet.create({
     },
     dangerButton: {
         backgroundColor: '#F44336',
+    },
+    logoutButton: {
+        backgroundColor: '#FF9800',
     },
 });
