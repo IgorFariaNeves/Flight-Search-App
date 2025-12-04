@@ -28,6 +28,8 @@ export const fetchFlightDetails = async (flightNumber) => {
 
 
         const flightData = json.data[0];
+        console.log("Flight Data:", JSON.stringify(flightData, null, 2));
+        console.log("Raw Status:", flightData.flight_status);
 
         return {
             flightNumber: flightData.flight.iata,
@@ -48,12 +50,13 @@ export const fetchFlightDetails = async (flightNumber) => {
 
 const translateStatus = (status) => {
     const statusMap = {
-        'scheduled': 'Agendado',
+        'scheduled': 'No Horário',
         'active': 'Em voo',
         'landed': 'Aterrissou',
         'cancelled': 'Cancelado',
         'incident': 'Incidente',
-        'diverted': 'Desviado'
+        'diverted': 'Desviado',
+        'delayed': 'Atrasado'
     };
     return statusMap[status] || status;
 };
