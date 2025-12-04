@@ -27,7 +27,7 @@ export default function LoginScreen({ navigation }) {
         setLoading(true);
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // Navigation will be handled by the auth state listener in AppNavigator
+
         } catch (error) {
             let errorMessage = 'Ocorreu um erro ao fazer login';
 
